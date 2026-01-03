@@ -1,3 +1,4 @@
+//pilha indireta,ocupa menos memoria, exrcicio dos diamantes quase igual ao dos parenteses
 #include <stdio.h>
 #include <string.h>
 
