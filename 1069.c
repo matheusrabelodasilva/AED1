@@ -1,70 +1,32 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-typedef struct no {
-    char dado;
-    struct no *prox;
-} Pilha;
-
-void empilha(Pilha **topo, char valor) {
-    Pilha *novo = (Pilha*)malloc(sizeof(Pilha));
-    
-    if (novo != NULL) {
-        novo->dado = valor;
-        novo->prox = *topo; 
-        *topo = novo;       
-    }
-}
-
-void desempilha(Pilha **topo) {
-    if (*topo != NULL) {
-        Pilha *temp = *topo;
-        *topo = (*topo)->prox; 
-        free(temp);
-    }
-}
-
-void limparPilha(Pilha **topo) {
-    Pilha *atual = *topo;
-    Pilha *proxNode;
-
-    while (atual != NULL) {
-        proxNode = atual->prox;
-        free(atual);
-        atual = proxNode;
-    }
-    *topo = NULL;
-}
-
 int main() {
-    char caso[1001]; 
-    int qtdCasos, i, diamantes;
-    Pilha *meuTopo = NULL;
+    int qtdCasos;
+    char caso[1001];
 
     scanf("%d", &qtdCasos);
 
-    while (qtdCasos > 0) {
-        diamantes = 0;
-        scanf(" %[^\n]", caso); 
+    while (qtdCasos--) {
+        scanf("%s", caso); // Lê a string (mina de diamantes)
 
-        for (i = 0; caso[i] != '\0'; i++) {
-            
+        int top = -1;      // Minha "Pilha": controla quantos '<' estão abertos
+        int diamantes = 0;
+        int tamanho = strlen(caso);
+
+        for (int i = 0; i < tamanho; i++) {
+            // Se encontrar a abertura de um diamante
             if (caso[i] == '<') {
-                empilha(&meuTopo, '<');
-            }
-            else if (caso[i] == '>') {
-                if (meuTopo != NULL) {
-                    desempilha(&meuTopo);
-                    diamantes++;
-                }
+                top++; // "Empilha": apenas aumento o contador de aberturas
+            } 
+            // Se encontrar o fechamento E houver algo para fechar na pilha
+            else if (caso[i] == '>' && top >= 0) {
+                top--;      // "Desempilha": encontrei um par, removo uma abertura
+                diamantes++; // Conto um diamante completo
             }
         }
 
         printf("%d\n", diamantes);
-        limparPilha(&meuTopo); 
-        
-        qtdCasos--;
     }
 
     return 0;
