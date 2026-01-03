@@ -32,10 +32,10 @@ int estaVazia(Pilha* p) {
 int main() {
     char expressao[1001];
 
-    while (scanf("%s", expressao) != EOF) {
+    while (scanf("%s", expressao) != EOF) {// analisa a nossa string ate achar o fim da expressao 
         Pilha pilha = { NULL }; 
         int eh_correta = 1;
-        int tamanho = strlen(expressao);
+        int tamanho = strlen(expressao); // strlen conta o tamanho da nossa expressão
 
         for (int i = 0; i < tamanho; i++) {
             if (expressao[i] == '(') {
