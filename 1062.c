@@ -1,34 +1,35 @@
+//Exercicio sobre trens, Pilha
 #include <stdio.h>
-#define MAX_COACHES 1001
+#define max_vagoes 1001
 int main() {
     int n;
-    int target_order[MAX_COACHES];
-    int station_stack[MAX_COACHES];
-    int first_coach;
+    int ordem[max_vagoes];
+    int pilha_estacao[max_vagoes];
+    int primeiro_vagao;
     while (scanf("%d", &n) == 1 && n != 0) {
         while (1) {
-            scanf("%d", &first_coach);
-            if (first_coach == 0) {
+            scanf("%d", &primeiro_vagao);
+            if (primeiro_vagao == 0) {
                 printf("\n");
                 break;
             }
-            target_order[0] = first_coach;
+            ordem[0] = primeiro_vagao;
             for (int i = 1; i < n; i++) {
-                scanf("%d", &target_order[i]);
+                scanf("%d", &ordem[i]);
             }
-            int top = -1;
-            int target_idx = 0;
-            for (int coach_from_a = 1; coach_from_a <= n; coach_from_a++) {
-                station_stack[++top] = coach_from_a;
-                while (top != -1 && station_stack[top] == target_order[target_idx]) {
-                    top--;
-                    target_idx++;
+            int ponteiro = -1;
+            int alvo = 0;
+            for (int j = 1; j <= n; j++) {
+                pilha_estacao[++ponteiro] = j;
+                while (top != -1 && pilha_estacao[ponteiro] == ordem[alvo]) {
+                    ponteiro--;
+                    alvo++;
                 }
             }
-            if (top == -1) {
-                printf("Yes\n");
+            if (ponteiro == -1) {
+                printf("Sim\n");
             } else {
-                printf("No\n");
+                printf("Nao\n");
             }
         }
     }
