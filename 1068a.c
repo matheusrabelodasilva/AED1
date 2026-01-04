@@ -1,3 +1,4 @@
+//Conceito de pilha, exercicio dos parenteses
 #include <stdio.h>
 #include <string.h>
 
