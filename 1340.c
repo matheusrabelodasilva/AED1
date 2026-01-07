@@ -2,143 +2,115 @@
 #include <stdlib.h>
 #include <stdbool.h>
 typedef struct {
-    int *arr;
-    int top;
-    int capacity;
-} Stack;
-void initStack(Stack *s, int cap) {
-    s->arr = (int *)malloc(sizeof(int) * cap);
-    s->top = -1;
-    s->capacity = cap;
+    int *dados;
+    int topo;
+} Pilha;
+void iniciar_pilha(Pilha *p, int cap) {
+    p->dados = (int *)malloc(sizeof(int) * cap);
+    p->topo = -1;
 }
-void pushStack(Stack *s, int val) {
-    s->arr[++s->top] = val;
+void empilhar(Pilha *p, int val) {
+    p->dados[++p->topo] = val;
 }
-int peekStack(Stack *s) {
-    return s->arr[s->top];
+int espiar_pilha(Pilha *p) {
+    return p->dados[p->topo];
 }
-void popStack(Stack *s) {
-    s->top--;
-}
-bool isStackEmpty(Stack *s) {
-    return s->top == -1;
+void desempilhar(Pilha *p) {
+    p->topo--;
 }
 typedef struct {
-    int *arr;
-    int front;
-    int rear;
-    int size;
-    int capacity;
-} Queue;
-void initQueue(Queue *q, int cap) {
-    q->arr = (int *)malloc(sizeof(int) * cap);
-    q->front = 0;
-    q->rear = -1;
-    q->size = 0;
-    q->capacity = cap;
+    int *dados;
+    int frente;
+    int tras;
+    int tamanho;
+    int capacidade;
+} Fila;
+void iniciar_fila(Fila *f, int cap) {
+    f->dados = (int *)malloc(sizeof(int) * cap);
+    f->frente = 0;
+    f->tras = -1;
+    f->tamanho = 0;
+    f->capacidade = cap;
 }
-void enqueue(Queue *q, int val) {
-    q->rear = (q->rear + 1) % q->capacity;
-    q->arr[q->rear] = val;
-    q->size++;
+void enfileirar(Fila *f, int val) {
+    f->tras = (f->tras + 1) % f->capacidade; // Fila circular
+    f->dados[f->tras] = val;
+    f->tamanho++;
 }
-int peekQueue(Queue *q) {
-    return q->arr[q->front];
+int espiar_fila(Fila *f) {
+    return f->dados[f->frente];
 }
-void dequeue(Queue *q) {
-    q->front = (q->front + 1) % q->capacity;
-    q->size--;
-}
-bool isQueueEmpty(Queue *q) {
-    return q->size == 0;
+void desenfileirar(Fila *f) {
+    f->frente = (f->frente + 1) % f->capacidade; 
+    f->tamanho--;
 }
 typedef struct {
-    int *arr;
-    int size;
-    int capacity;
-} PriorityQueue;
-int compare(const void *a, const void *b) {
+    int *dados;
+    int tamanho;
+} FilaPrioridade;
+int comparar(const void *a, const void *b) {
     return (*(int*)b - *(int*)a);
 }
-void initPriorityQueue(PriorityQueue *pq, int cap) {
-    pq->arr = (int *)malloc(sizeof(int) * cap);
-    pq->size = 0;
-    pq->capacity = cap;
+void iniciar_fp(FilaPrioridade *fp, int cap) {
+    fp->dados = (int *)malloc(sizeof(int) * cap);
+    fp->tamanho = 0;
 }
-void enqueuePQ(PriorityQueue *pq, int val) {
-    pq->arr[pq->size++] = val;
+void inserir_fp(FilaPrioridade *fp, int val) {
+    fp->dados[fp->tamanho++] = val;
 }
-int peekPQ(PriorityQueue *pq) {
-    if (pq->size == 0) return -1; 
-    qsort(pq->arr, pq->size, sizeof(int), compare); 
-    return pq->arr[0];
+int espiar_fp(FilaPrioridade *fp) {
+    qsort(fp->dados, fp->tamanho, sizeof(int), comparar);
+    return fp->dados[0];
 }
-void dequeuePQ(PriorityQueue *pq) {
-    if (pq->size == 0) return;
-    qsort(pq->arr, pq->size, sizeof(int), compare);
-    for (int i = 0; i < pq->size - 1; i++) {
-        pq->arr[i] = pq->arr[i + 1];
+void remover_fp(FilaPrioridade *fp) {
+    qsort(fp->dados, fp->tamanho, sizeof(int), comparar);
+    for (int i = 0; i < fp->tamanho - 1; i++) {
+        fp->dados[i] = fp->dados[i + 1];
     }
-    pq->size--;
-}
-bool isPriorityQueueEmpty(PriorityQueue *pq) {
-    return pq->size == 0;
+    fp->tamanho--;
 }
 int main() {
-    int n, op_type, value;
+    int n, tipo_op, valor;
     while (scanf("%d", &n) != EOF) {
-        Stack s;
-        Queue q;
-        PriorityQueue pq;
-        initStack(&s, n);
-        initQueue(&q, n);
-        initPriorityQueue(&pq, n);
-        bool is_stack = true;
-        bool is_queue = true;
-        bool is_priority_queue = true;
+        Pilha p;
+        Fila f;
+        FilaPrioridade fp;
+        iniciar_pilha(&p, n);
+        iniciar_fila(&f, n);
+        iniciar_fp(&fp, n);
+        bool eh_pilha = true, eh_fila = true, eh_fp = true;
         for (int i = 0; i < n; i++) {
-            scanf("%d %d", &op_type, &value);
-            if (op_type == 1) {
-                if (is_stack) pushStack(&s, value);
-                if (is_queue) enqueue(&q, value);
-                if (is_priority_queue) enqueuePQ(&pq, value);
+            scanf("%d %d", &tipo_op, &valor);
+            if (tipo_op == 1) { 
+                if (eh_pilha) empilhar(&p, valor);
+                if (eh_fila) enfileirar(&f, valor);
+                if (eh_fp) inserir_fp(&fp, valor);
             } else { 
-                if (is_stack) {
-                    if (isStackEmpty(&s) || peekStack(&s) != value) {
-                        is_stack = false;
-                    } else {
-                        popStack(&s);
-                    }
+                if (eh_pilha) {
+                    if (p.topo == -1 || espiar_pilha(&p) != valor) eh_pilha = false;
+                    else desempilhar(&p);
                 }
-                if (is_queue) {
-                    if (isQueueEmpty(&q) || peekQueue(&q) != value) {
-                        is_queue = false;
-                    } else {
-                        dequeue(&q);
-                    }
+                if (eh_fila) {
+                    if (f.tamanho == 0 || espiar_fila(&f) != valor) eh_fila = false;
+                    else desenfileirar(&f);
                 }
-                if (is_priority_queue) {
-                    if (isPriorityQueueEmpty(&pq) || peekPQ(&pq) != value) {
-                        is_priority_queue = false;
-                    } else {
-                        dequeuePQ(&pq);
-                    }
+                if (eh_fp) {
+                    if (fp.tamanho == 0 || espiar_fp(&fp) != valor) eh_fp = false;
+                    else remover_fp(&fp);
                 }
             }
         }
-        int possible_count = is_stack + is_queue + is_priority_queue;
-        if (possible_count == 0) {
-            printf("impossible\n");
-        } else if (possible_count > 1) {
-            printf("not sure\n");
-        } else {
-            if (is_stack) printf("stack\n");
-            else if (is_queue) printf("queue\n");
-            else printf("priority queue\n");
+        int possiveis = eh_pilha + eh_fila + eh_fp;
+        if (possiveis == 0) printf("impossivel\n");
+        else if (possiveis > 1) printf("sem certeza\n");
+        else {
+            if (eh_pilha) printf("pilha\n");
+            else if (eh_fila) printf("fila\n");
+            else printf("fila de prioridade\n");
         }
-        free(s.arr);
-        free(q.arr);
-        free(pq.arr);
+        free(p.dados);
+        free(f.dados);
+        free(fp.dados);
     }
     return 0;
 }
