@@ -1,17 +1,18 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <string.h>
 #define MAX_ID 100001
 int main() {
     int n, m;
-    scanf("%d", &n);
+    if (scanf("%d", &n) != 1) return 0;
     int fila_inicial[n];
     for (int i = 0; i < n; i++) {
         scanf("%d", &fila_inicial[i]);
     }
     bool deixou_a_fila[MAX_ID];
-    memset(deixou_a_fila, false, sizeof(deixou_a_fila));
-    scanf("%d", &m);
+    for (int i = 0; i < MAX_ID; i++) {
+        deixou_a_fila[i] = false;
+    }
+    if (scanf("%d", &m) != 1) return 0;
     for (int i = 0; i < m; i++) {
         int id_desistente;
         scanf("%d", &id_desistente);
