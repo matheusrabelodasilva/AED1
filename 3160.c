@@ -1,76 +1,81 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-
-void liberarMemoria(char **amigos, int total) {
-    for (int i = 0; i < total; i++) {
-        free(amigos[i]);
-    }
+int tamanho_str(char *s) {
+    int i = 0;
+    while (s[i] != '\0' && s[i] != '\n' && s[i] != '\r') i++;
+    return i;
 }
-
-int main() {
-    char listaAtual[1000], novaLista[1000], amigoIndicado[21];
-    char *amigos[200];
-    int totalAmigos = 0;
-    
-    char listaAtualCopia[1000];
-    char novaListaCopia[1000];
-
-    if (!fgets(listaAtual, sizeof(listaAtual), stdin)) return 0;
-    if (!fgets(novaLista, sizeof(novaLista), stdin)) return 0;
-    if (!fgets(amigoIndicado, sizeof(amigoIndicado), stdin)) return 0;
-
-    listaAtual[strcspn(listaAtual, "\n")] = '\0';
-    novaLista[strcspn(novaLista, "\n")] = '\0';
-    amigoIndicado[strcspn(amigoIndicado, "\n")] = '\0';
-    
-    strcpy(listaAtualCopia, listaAtual);
-    strcpy(novaListaCopia, novaLista);
-
-    char *nomeAmigo = strtok(listaAtualCopia, " ");
-    while (nomeAmigo != NULL) {
-        amigos[totalAmigos] = (char*)malloc((strlen(nomeAmigo) + 1) * sizeof(char));
-        if (!amigos[totalAmigos]) return 1;
-        strcpy(amigos[totalAmigos], nomeAmigo);
-        totalAmigos++;
-        nomeAmigo = strtok(NULL, " ");
+int compara_str(char *s1, char *s2) {
+    int i = 0;
+    while (s1[i] != '\0' && s2[i] != '\0') {
+        if (s1[i] != s2[i]) return s1[i] - s2[i];
+        i++;
     }
-
-    int posicaoInsercao = totalAmigos;
-    if (strcmp(amigoIndicado, "nao") != 0) {
-        for (int i = 0; i < totalAmigos; i++) {
-            if (strcmp(amigos[i], amigoIndicado) == 0) {
-                posicaoInsercao = i;
+    return s1[i] - s2[i];
+}
+void copia_str(char *dest, char *orig) {
+    int i = 0;
+    while (orig[i] != '\0' && orig[i] != '\n' && orig[i] != '\r') {
+        dest[i] = orig[i];
+        i++;
+    }
+    dest[i] = '\0';
+}
+int main() {
+    char linha1[1000], linha2[1000], indicado[50];
+    char *amigos[500];
+    int totalAmigos = 0;
+    scanf(" %[^\n]", linha1);
+    scanf(" %[^\n]", linha2);
+    scanf("%s", indicado);
+    int i = 0;
+    while (linha1[i] != '\0') {
+        if (linha1[i] != ' ') {
+            char temp[50];
+            int j = 0;
+            while (linha1[i] != ' ' && linha1[i] != '\0') {
+                temp[j++] = linha1[i++];
+            }
+            temp[j] = '\0';       
+            amigos[totalAmigos] = (char*)malloc((j + 1) * sizeof(char));
+            copia_str(amigos[totalAmigos], temp);
+            totalAmigos++;
+        } else {
+            i++;
+        }
+    }
+    int posInsercao = totalAmigos;
+    if (compara_str(indicado, "nao") != 0) {
+        for (int k = 0; k < totalAmigos; k++) {
+            if (compara_str(amigos[k], indicado) == 0) {
+                posInsercao = k;
                 break;
             }
         }
     }
-
-    nomeAmigo = strtok(novaListaCopia, " ");
-    while (nomeAmigo != NULL) {
-        for (int i = totalAmigos; i > posicaoInsercao; i--) {
-            amigos[i] = amigos[i - 1];
+    i = 0;
+    while (linha2[i] != '\0') {
+        if (linha2[i] != ' ') {
+            char temp[50];
+            int j = 0;
+            while (linha2[i] != ' ' && linha2[i] != '\0') {
+                temp[j++] = linha2[i++];
+            }
+            temp[j] = '\0';
+            for (int k = totalAmigos; k > posInsercao; k--) {
+                amigos[k] = amigos[k - 1];
+            }
+            amigos[posInsercao] = (char*)malloc((j + 1) * sizeof(char));
+            copia_str(amigos[posInsercao], temp);
+            posInsercao++;
+            totalAmigos++;
+        } else {
+            i++;
         }
-
-        amigos[posicaoInsercao] = (char*)malloc((strlen(nomeAmigo) + 1) * sizeof(char));
-        if (!amigos[posicaoInsercao]) {
-            liberarMemoria(amigos, totalAmigos);
-            return 1;
-        }
-        strcpy(amigos[posicaoInsercao], nomeAmigo);
-        
-        posicaoInsercao++;
-        totalAmigos++;
-        
-        nomeAmigo = strtok(NULL, " ");
     }
-
-    for (int i = 0; i < totalAmigos; i++) {
-        printf("%s", amigos[i]);
-        if (i != totalAmigos - 1) printf(" ");
-        free(amigos[i]);
+    for (int k = 0; k < totalAmigos; k++) {
+        printf("%s%c", amigos[k], (k == totalAmigos - 1 ? '\n' : ' '));
+        free(amigos[k]);
     }
-    printf("\n");
-    
     return 0;
 }
